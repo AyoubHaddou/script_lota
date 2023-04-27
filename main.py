@@ -43,11 +43,11 @@ df['diff'] = df['diff'].astype('timedelta64[D]')
 
 # On reparti en 3 dataframe les services: 
 df = df.explode('service_instance').explode('service_volume').explode('service_snapshot')
-df_instance = df[['id','from','to','service_instance','diff']].copy().rename(columns={"service_instance": "service"})
-df_volume = df[['id','from','to','service_volume','diff']].copy().rename(columns={"service_volume": "service"})
-df_snapshot = df[['id','from','to','service_snapshot','diff']].copy().rename(columns={"service_snapshot": "service"})
+df_instance = df[['id','from','to','service_instance','diff']].rename(columns={"service_instance": "service"})
+df_volume = df[['id','from','to','service_volume','diff']].rename(columns={"service_volume": "service"})
+df_snapshot = df[['id','from','to','service_snapshot','diff']].rename(columns={"service_snapshot": "service"})
 
-# datafram for instance service: 
+# 1 - datafram for instance service: 
 df_instance['region'] = df_instance['service'].apply(lambda x: x['region'] if isinstance(x, dict) else x )
 df_instance['resource_id'] = df_instance['service'].apply(lambda x: x['details'][0]['instanceId'] if isinstance(x, dict) else None)
 df_instance['resource_path'] = df_instance['service'].apply(lambda x: x['details'][0]['instanceId'] if isinstance(x, dict) else None)
@@ -58,7 +58,7 @@ df_instance['cost_total'] = df_instance['service'].apply(lambda x: x['details'][
 df_instance['cost'] = df_instance['cost_total'] /  df_instance['diff']
 df_instance = df_instance.drop(['service','diff'], axis=1).drop_duplicates()
 
-# datafram for volume service:
+# 2 - datafram for volume service:
 df_volume['region'] = df_volume['service'].apply(lambda x: x['region'] )
 df_volume['resource_id'] = df_volume['service'].apply(lambda x: x['details'][0]['volumeId'])
 df_volume['resource_path'] = df_volume['service'].apply(lambda x: x['details'][0]['volumeId'])
@@ -69,7 +69,7 @@ df_volume['cost_total'] = df_volume['service'].apply(lambda x: x['details'][0]['
 df_volume['cost'] = df_volume['cost_total'] /  df_volume['diff']
 df_volume = df_volume.drop(['service','diff'], axis=1).drop_duplicates()
 
-# dataframe for snapshot service 
+# 3 - dataframe for snapshot service 
 df_snapshot['region'] = df_snapshot['service'].apply(lambda x: x['region'] )
 df_snapshot['resource_id'] = "resource_id"
 df_snapshot['resource_path'] = "resource_path"
